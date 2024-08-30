@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Upload and Play</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .container input[type="file"] {
+        margin-bottom: 10px;
+      }
+
+      .container button {
+        padding: 10px 15px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .container button:hover {
+        background-color: #218838;
+      }
+
+      .video-container {
+        margin-top: 20px;
+        display: none;
+      }
+
+      video {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- 上传视频部分 -->
+      <div>
+        <input type="file" id="videoFile" />
+        <button onclick="uploadVideo()">上传视频</button>
+      </div>
+
+      <!-- 播放视频部分 -->
+      <div class="video-container" id="videoContainer">
+        <h2>播放视频</h2>
+        <video id="videoPlayer" controls></video>
+      </div>
+    </div>
+
+    <script>
+      function uploadVideo() {
+        const fileInput = document.getElementById("videoFile");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          alert("Please select a video file.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("http://localhost:3421/uploadVideo", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("视频上传成功");
+              checkProcessingStatus(file.name);
+            } else {
+              alert("视频上传失败");
+            }
+          })
+          .catch((error) => {
+            console.error("上传的错误是:", error);
+            alert("上传发生错误");
+          });
+      }
+
+      function checkProcessingStatus(filename) {
+        const interval = setInterval(() => {
+          const [year, name, season,episode,author] = filename.split("-");
+          const hlsPath = `http://localhost:3421/hls/${year}/${name}/${season}/${episode}/output.m3u8`;
+
+          fetch(hlsPath, { method: "HEAD" })
+            .then((response) => {
+              if (response.ok) {
+                clearInterval(interval);
+                fetchVideo(hlsPath);
+              }
+            })
+            .catch((error) => {
+              console.error("Error checking video status:", error);
+            });
+        }, 100); // 每3秒检查一次
+      }
+
+      function fetchVideo(hlsPath) {
+        const videoContainer = document.getElementById("videoContainer");
+        const videoPlayer = document.getElementById("videoPlayer");
+
+        videoPlayer.src = hlsPath; // 动态设置 HLS 文件路径
+        videoContainer.style.display = "block";
+
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(videoPlayer.src);
+          hls.attachMedia(videoPlayer);
+          hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            videoPlayer.play();
+          });
+        } else if (videoPlayer.canPlayType("application/vnd.apple.mpegurl")) {
+          videoPlayer.src = hlsPath;
+          videoPlayer.addEventListener("loadedmetadata", function () {
+            videoPlayer.play();
+          });
+        } else {
+          alert("Your browser does not support HLS.");
+        }
+      }
+    </script>
+
+    <!-- 引入 HLS.js 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  </body>
+</html>
