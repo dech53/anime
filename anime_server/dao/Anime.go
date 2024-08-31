@@ -24,5 +24,6 @@ func SaveAnimeInfo(anime *model.Anime) error {
 	return nil
 }
 func GetAnimes(anime_Info *[]model.Anime) error {
+	//后续数量多了使用分页查询
 	return DB.Find(anime_Info).Error
 }

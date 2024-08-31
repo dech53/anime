@@ -1,5 +1,7 @@
 package model
 
+import "github.com/dgrijalva/jwt-go"
+
 type Anime struct {
 	Year         int    `gorm:"not null"`
 	Name         string `gorm:"size:255;not null"`
@@ -8,4 +10,8 @@ type Anime struct {
 	Author       string `gorm:"size:255;not null"`
 	Path         string `gorm:"size:255;not null"`
 	Cover        string `gorm:"size:255;not null"`
+}
+type MyClaims struct {
+	Username string `json:"username"`
+	jwt.StandardClaims
 }
