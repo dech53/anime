@@ -2,7 +2,14 @@
   <header class="header">
     <div class="left-section">
       <img class="avatar" :src="avatarUrl" alt="Avatar" />
-      <a :href="githubLink" target="_blank" class="github-button">GitHub</a>
+      <a :href="githubLink" class="link-button">
+        <img src="https://cdn.icon-icons.com/icons2/2406/PNG/512/github_git_icon_145985.png" alt="GitHub"
+          class="link-icon" />
+      </a>
+      <a :href="telegramLink" class="link-button">
+        <img src="https://cdn.icon-icons.com/icons2/2429/PNG/512/telegram_logo_icon_147228.png" alt="Telegram"
+          class="link-icon">
+      </a>
     </div>
     <button class="logout-button" @click="logout">登出</button>
   </header>
@@ -11,9 +18,9 @@
 <script setup>
 import { useRouter } from 'vue-router';
 
-const avatarUrl = 'https://avatars.githubusercontent.com/u/93471086?s=400&u=65aeee3d5216441f5aeda0e1daf92bb0ad8fae7a&v=4'; 
+const avatarUrl = 'https://avatars.githubusercontent.com/u/93471086?s=400&u=65aeee3d5216441f5aeda0e1daf92bb0ad8fae7a&v=4';
 const githubLink = 'https://github.com/dech53';
-
+const telegramLink = 'https://t.me/dech53';
 const router = useRouter();
 
 const logout = () => {
@@ -29,7 +36,7 @@ const logout = () => {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #282c34;
+  background-color: linear-gradient(135deg, #17ead9, #6078ea);
   color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
@@ -48,21 +55,21 @@ const logout = () => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.github-button {
-  background-color: #87c0ca;
-  color: white;
-  padding: 8px 16px;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+.link-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.github-button:hover {
-  background-color: #108b96;
+.link-button {
+  display: flex;
+  align-items: center;
 }
 
 .logout-button {
-  background-color: #ff4d4f;
+  background-color: #ff6163;
   color: white;
   padding: 8px 16px;
   border: none;

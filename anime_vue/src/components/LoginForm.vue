@@ -3,15 +3,29 @@
     <h1>登录</h1>
     <form @submit.prevent="login">
       <div class="form-group">
-        <label for="username">用户名：</label>
-        <input type="text" id="username" v-model="username" required/>
+        <div class="input-wrapper">
+          <input type="text" id="username" v-model="username" @focus="focusField('username')"
+            @blur="blurField('username')" required />
+          <label for="username" :class="{ 'focused': isFocused.username || username }">用户名</label>
+        </div>
       </div>
       <div class="form-group">
-        <label for="password">密码：</label>
-        <input type="password" id="password" v-model="password" required/>
+        <div class="input-wrapper">
+          <input type="password" id="password" v-model="password" @focus="focusField('password')"
+            @blur="blurField('password')" required />
+          <label for="password" :class="{ 'focused': isFocused.password || password }">密码</label>
+        </div>
       </div>
       <button type="submit">登录</button>
     </form>
+    <div class="accountEvent">
+      <div>
+        <a href="/regist">注册账号</a>
+      </div>
+      <div>
+        <a href="">忘记密码？</a>
+      </div>
+    </div>
     <div v-if="error" class="error-message">{{ error }}</div>
   </div>
 </template>
@@ -22,29 +36,37 @@ export default {
     return {
       username: '',
       password: '',
-      error: ''
+      error: '',
+      isFocused: {
+        username: false,
+        password: false
+      }
     };
   },
   methods: {
+    focusField(field) {
+      this.isFocused[field] = true;
+    },
+    blurField(field) {
+      this.isFocused[field] = false;
+    },
     async login() {
       try {
         const response = await this.$axios.post('http://localhost:1226/login', {
-          id:1,
+          id: 1,
           username: this.username,
           password: this.password
         });
         if (response.data.code === 200) {
-          // 假设 token 在响应数据中是 response.data.token
           localStorage.setItem('authToken', response.data.result);
           this.$router.push('/'); // 登录成功后重定向到首页
-        }else{
-          this.error = response.data.result
+        } else {
+          this.error = response.data.result;
         }
       } catch (error) {
         console.error('登录失败:', error);
       }
     }
-
   }
 };
 </script>
@@ -57,6 +79,8 @@ export default {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 h1 {
@@ -70,21 +94,44 @@ h1 {
   margin-bottom: 20px;
 }
 
-label {
-  display: block;
-  font-size: 16px;
-  color: #555;
-  margin-bottom: 10px;
+.input-wrapper {
+  position: relative;
 }
 
 input[type="text"],
 input[type="password"] {
-  width: calc(100% - 20px);
+  width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 16px;
   box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-color: #007bff;
+}
+
+label {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  background: white;
+  padding: 0 5px;
+  color: #555;
+  font-size: 16px;
+  transition: top 0.3s, left 0.3s, font-size 0.3s, color 0.3s;
+  pointer-events: none;
+}
+
+input:focus+label,
+label.focused {
+  top: -10px;
+  left: -3px;
+  font-size: 12px;
+  color: #007bff;
 }
 
 button {
@@ -97,10 +144,26 @@ button {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-top: 20px;
 }
 
 button:hover {
   background-color: #0056b3;
+}
+
+.accountEvent {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+a {
+  text-decoration: none;
+  color: #9aa7b1;
+}
+
+a:hover {
+  color: #0078d4;
 }
 
 .error-message {

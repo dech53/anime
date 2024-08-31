@@ -1,44 +1,29 @@
 <template>
   <div id="app">
-    <video id="video-player" controls autoplay></video>
-    <div v-if="!animes || animes.length === 0">获取信息失败</div>
+    <br>
     <div v-for="anime in animes" :key="anime.Name" class="anime-item">
-      <img
-          :src="anime.Cover"
-          :alt="anime.Name"
-          class="cover"
-          @click="selectAnime(anime)"
-      />
+      <img :src="anime.Cover" :alt="anime.Name" class="cover" @click="selectAnime(anime)" />
       <div>
-        <h2 @click="selectAnime(anime)">{{ anime.Name }}</h2>
+        <h2 @click="selectAnime(anime)">
+          {{ truncateName(anime.Name) }}
+        </h2>
         <p>Season: {{ anime.Season }}</p>
         <p>
           Episodes:
-          <br>
-          <br>
-          <span
-              v-for="episode in anime.EpisodeCount || []"
-              :key="episode"
-              class="episode-number"
-              @click="playEpisode(anime, episode)"
-          >
-              {{ episode }}
-            </span>
+          <span>{{ anime.EpisodeCount }}</span>
         </p>
       </div>
     </div>
+    <!-- <video id="video-player" controls autoplay></video> -->
   </div>
 </template>
 
 <script>
-import Hls from "hls.js";
 
 export default {
   data() {
     return {
       animes: [],
-      currentVideo: null,
-      hls: null,
     };
   },
   methods: {
@@ -61,38 +46,16 @@ export default {
       }
     },
     selectAnime(anime) {
-      this.currentVideo = null;
-      this.selectedAnime = anime;
-    },
-    playEpisode(anime, episode) {
-      const videoElement = document.getElementById("video-player");
-      const episodePath = `/hls/${anime.Year}/${anime.Name}/${anime.Season}/${episode}/output.m3u8`;
-      const videoUrl = `http://localhost:1226${episodePath}`;
-      // 清理之前的 HLS 实例
-      if (this.hls) {
-        this.hls.destroy();
-      }
-      // 初始化 HLS.js
-      if (Hls.isSupported()) {
-        this.hls = new Hls();
-        this.hls.loadSource(videoUrl);
-        this.hls.attachMedia(videoElement);
-        this.hls.on(Hls.Events.MANIFEST_PARSED, function () {
-          videoElement.play();
-        });
-      } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
-        // 对于支持 HLS 的浏览器
-        videoElement.src = videoUrl;
-        videoElement.addEventListener("loadedmetadata", function () {
-          videoElement.play();
-        });
-      }
+      console.log(anime);
     },
     handleStorageChange(event) {
       if (event.key === 'authToken' && event.newValue === null) {
         // 如果 authToken 被删除，重定向到登录页面
         this.$router.push('/login');
       }
+    },
+    truncateName(name) {
+      return name.length > 8 ? name.slice(0, 8) + '..' : name;
     },
   },
   mounted() {
@@ -103,6 +66,13 @@ export default {
 </script>
 
 <style>
+#app {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
@@ -122,13 +92,16 @@ h1 {
 
 .anime-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
+  margin: 5px;
   padding: 15px;
-  width: 80%;
+  width: 250px;
+  height: 245px;
   transition: transform 0.2s;
 }
 
@@ -196,4 +169,3 @@ video {
   }
 }
 </style>
-  
