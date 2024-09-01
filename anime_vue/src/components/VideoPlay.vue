@@ -18,7 +18,6 @@
         <div class="video-container">
             <video class="video_play" ref="videoPlayer" controls></video>
         </div>
-
     </div>
 </template>
 
@@ -141,18 +140,15 @@ export default {
 }
 
 .video_play {
-    width: 90%;
-    /* 固定宽度 */
-    height: 90%;
-    /* 固定高度 */
+    width: 100%;
+    height: 95%;
+    margin-top: 17px;
     background-color: #000;
-    /* 在加载前显示黑色背景 */
     object-fit: cover;
 }
 .video-container {
-    width: 100%;
-    /* 固定宽度 */
-    height: 100%;
-    overflow: hidden; /* 防止内容溢出 */
+    width: 120%;
+    height: 110%;
+    overflow: hidden;
 }
 </style>
