@@ -3,17 +3,17 @@
     <h1>登录</h1>
     <form @submit.prevent="login">
       <div class="form-group">
-        <div class="input-wrapper">
+        <div class="input-container">
           <input type="text" id="username" v-model="username" @focus="focusField('username')"
             @blur="blurField('username')" required />
-          <label for="username" :class="{ 'focused': isFocused.username || username }">用户名</label>
+          <label :class="{ active: isFocused.username || username }">用户名</label>
         </div>
       </div>
       <div class="form-group">
-        <div class="input-wrapper">
+        <div class="input-container">
           <input type="password" id="password" v-model="password" @focus="focusField('password')"
             @blur="blurField('password')" required />
-          <label for="password" :class="{ 'focused': isFocused.password || password }">密码</label>
+          <label :class="{ active: isFocused.password || password }">密码</label>
         </div>
       </div>
       <button type="submit">登录</button>
@@ -23,7 +23,7 @@
         <a href="/regist">注册账号</a>
       </div>
       <div>
-        <a href="">忘记密码？</a>
+        <a href="/resetPassword">忘记密码？</a>
       </div>
     </div>
     <div v-if="error" class="error-message">{{ error }}</div>
@@ -52,7 +52,7 @@ export default {
     },
     async login() {
       try {
-        const response = await this.$axios.post('http://localhost:1226/login', {
+        const response = await this.$axios.post('http://192.168.1.4:1226/login', {
           id: 1,
           username: this.username,
           password: this.password
@@ -92,9 +92,10 @@ h1 {
 
 .form-group {
   margin-bottom: 20px;
+  position: relative;
 }
 
-.input-wrapper {
+.input-container {
   position: relative;
 }
 
@@ -106,7 +107,8 @@ input[type="password"] {
   border-radius: 6px;
   font-size: 16px;
   box-sizing: border-box;
-  transition: border-color 0.3s;
+  outline: none;
+  transition: border-color 0.2s ease;
 }
 
 input:focus {
@@ -115,23 +117,23 @@ input:focus {
 
 label {
   position: absolute;
-  top: 50%;
   left: 12px;
+  top: 50%;
   transform: translateY(-50%);
-  background: white;
-  padding: 0 5px;
-  color: #555;
   font-size: 16px;
-  transition: top 0.3s, left 0.3s, font-size 0.3s, color 0.3s;
+  color: #aaa;
+  transition: 0.2s ease all;
   pointer-events: none;
 }
 
 input:focus+label,
-label.focused {
+label.active {
   top: -10px;
   left: -3px;
   font-size: 12px;
   color: #007bff;
+  background: #fff;
+  padding: 0 5px;
 }
 
 button {

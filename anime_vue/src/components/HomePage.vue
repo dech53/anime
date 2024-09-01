@@ -14,30 +14,44 @@
         </p>
       </div>
     </div>
-    <!-- <video id="video-player" controls autoplay></video> -->
+    <Modal :visible="showModal" :anime="newAnime" @close="showModal = false" @submit="addAnime" />
+    <button class="test" @click="showModal = true">+</button>
   </div>
 </template>
 
 <script>
+import Modal from './AddAnimeForm.vue';
 
 export default {
+  components: {
+    Modal
+  },
   data() {
     return {
       animes: [],
+      showModal: false,
+      newAnime: {
+        Year: '',
+        Name: '',
+        Season: '',
+        EpisodeCount: '',
+        Author: '',
+        Path: '',
+        Cover: ''
+      }
     };
   },
   methods: {
     async fetchAnimeInfo() {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await this.$axios.get('http://localhost:1226/info/getInfos', {
+        const response = await this.$axios.get('http://192.168.1.4:1226/info/getInfos', {
           headers: {
             'Authorization': token
           }
         });
         if (response.data.code === 302) {
-          // 处理 302 重定向
-          this.$router.push('/login'); // 重定向到登录页面
+          this.$router.push('/login');
         } else {
           this.animes = response.data.result;
         }
@@ -46,17 +60,30 @@ export default {
       }
     },
     selectAnime(anime) {
-      this.$router.push('/videoplay/'+anime.id);
+      this.$router.push('/videoplay/' + anime.id);
     },
     handleStorageChange(event) {
       if (event.key === 'authToken' && event.newValue === null) {
-        // 如果 authToken 被删除，重定向到登录页面
         this.$router.push('/login');
       }
     },
     truncateName(name) {
       return name.length > 8 ? name.slice(0, 8) + '..' : name;
     },
+    addAnime(anime) {
+      if (anime.Name && anime.Year && anime.Season) {
+        this.animes.push(anime);
+        this.newAnime = {
+          Year: '',
+          Name: '',
+          Season: '',
+          EpisodeCount: '',
+          Author: '',
+          Path: '',
+          Cover: ''
+        };
+      }
+    }
   },
   mounted() {
     this.fetchAnimeInfo();
@@ -66,11 +93,65 @@ export default {
 </script>
 
 <style>
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content label {
+  margin-bottom: 10px;
+}
+
+.modal-content button {
+  margin-top: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-content button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal-content button[type="button"] {
+  background-color: #ccc;
+  color: black;
+}
+
 #app {
   display: flex;
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
+  z-index: 1;
 }
 
 body {
@@ -167,5 +248,30 @@ video {
   video {
     width: 100%;
   }
+}
+
+.test {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, transform 0.2s;
+  font-size: 24px;
+  text-align: center;
+  z-index: 5;
+}
+
+.test:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
 }
 </style>

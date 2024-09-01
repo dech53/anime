@@ -4,7 +4,7 @@
             <img :src="a.Cover" :alt="a.Name" class="cover" @click="ChooseEpisode(a)" />
             <div>
                 <h2>{{ a.Name }}</h2>
-                <p>{{ a.Author }}</p>
+                <p>作者:{{ a.Author }}</p>
                 <p>Season: {{ a.Season }}</p>
                 <p>集数:</p>
                 <div class="episode-container">
@@ -15,7 +15,10 @@
                 </div>
             </div>
         </div>
-        <video class="video_play" ref="videoPlayer" controls></video>
+        <div class="video-container">
+            <video class="video_play" ref="videoPlayer" controls></video>
+        </div>
+
     </div>
 </template>
 
@@ -35,7 +38,7 @@ export default {
             try {
                 const router = useRoute();
                 const token = localStorage.getItem('authToken');
-                const response = await this.$axios.get('http://localhost:1226/info/getInfoById/' + router.params.id, {
+                const response = await this.$axios.get('http://192.168.1.4:1226/info/getInfoById/' + router.params.id, {
                     headers: {
                         'Authorization': token
                     }
@@ -51,18 +54,17 @@ export default {
                 console.log('Failed to fetch anime info:', error);
             }
         },
-
         async playEpisode(anime, episode) {
             try {
-                const videoPath = `http://localhost:1226/hls/${anime.Year}/${anime.Name}/${anime.Season}/${episode}/output.m3u8`;
-                console.log(videoPath);
+                const videoPath = `http://192.168.1.4:1226/hls/${anime.Year}/${anime.Name}/${anime.Season}/${episode}/output.m3u8`;
                 const videoPlayer = this.$refs.videoPlayer;
-                // 清理之前的 HLS 实例
+
                 if (this.hls) {
-                    this.hls.destroy();
-                }
-                // 初始化 HLS.js
-                if (Hls.isSupported()) {
+                    // 仅加载新的视频源，而不销毁 HLS 实例
+                    this.hls.loadSource(videoPath);
+                    this.hls.attachMedia(videoPlayer);
+                    videoPlayer.play();
+                } else if (Hls.isSupported()) {
                     this.hls = new Hls();
                     this.hls.loadSource(videoPath);
                     this.hls.attachMedia(videoPlayer);
@@ -94,10 +96,11 @@ export default {
 
 <style scoped>
 .main_menu {
+    margin-top: 5px;
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
     height: 80vh;
     width: 78vw;
 }
@@ -138,7 +141,18 @@ export default {
 }
 
 .video_play {
+    width: 90%;
+    /* 固定宽度 */
+    height: 90%;
+    /* 固定高度 */
+    background-color: #000;
+    /* 在加载前显示黑色背景 */
+    object-fit: cover;
+}
+.video-container {
     width: 100%;
+    /* 固定宽度 */
     height: 100%;
+    overflow: hidden; /* 防止内容溢出 */
 }
 </style>
