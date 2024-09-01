@@ -27,3 +27,6 @@ func GetAnimes(anime_Info *[]model.Anime) error {
 	//后续数量多了使用分页查询
 	return DB.Find(anime_Info).Error
 }
+func GetInfoById(id int, anime_Info *[]model.Anime) error {
+	return DB.Where("id = ?", id).First(anime_Info).Error
+}

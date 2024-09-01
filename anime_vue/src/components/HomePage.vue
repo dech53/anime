@@ -7,9 +7,9 @@
         <h2 @click="selectAnime(anime)">
           {{ truncateName(anime.Name) }}
         </h2>
-        <p>Season: {{ anime.Season }}</p>
+        <p>{{ anime.Season }}</p>
         <p>
-          Episodes:
+          集数:
           <span>{{ anime.EpisodeCount }}</span>
         </p>
       </div>
@@ -46,7 +46,7 @@ export default {
       }
     },
     selectAnime(anime) {
-      console.log(anime);
+      this.$router.push('/videoplay/'+anime.id);
     },
     handleStorageChange(event) {
       if (event.key === 'authToken' && event.newValue === null) {

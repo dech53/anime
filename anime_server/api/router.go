@@ -65,3 +65,14 @@ func GetInfos(c *gin.Context) {
 	}
 	utils.ResponseSuccess(c, anime_Infos, 200)
 }
+func GetInfoById(c *gin.Context) {
+	var anime_Info []model.Anime
+	anime_id := c.Param("id")
+	id, _ := strconv.Atoi(anime_id)
+	err := dao.GetInfoById(id, &anime_Info)
+	if err != nil {
+		utils.ResponseFail(c, "获取信息失败", 404)
+		return
+	}
+	utils.ResponseSuccess(c, anime_Info, 200)
+}

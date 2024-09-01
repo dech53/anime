@@ -33,6 +33,7 @@ const logout = () => {
 .header {
   width: 100%;
   display: flex;
+  width: 100wh;
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;

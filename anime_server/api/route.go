@@ -16,6 +16,7 @@ func InitRoute() {
 	{
 		InfoGroup.Use(middleware.JWTAuthMiddleware())
 		InfoGroup.GET("/getInfos", GetInfos)
+		InfoGroup.GET("/getInfoById/:id",GetInfoById)
 	}
 	// 提供 HLS 文件
 	r.Static("/hls", "./hls")
