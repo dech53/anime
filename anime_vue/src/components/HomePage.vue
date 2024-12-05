@@ -45,7 +45,7 @@ export default {
     async fetchAnimeInfo() {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await this.$axios.get('http://192.168.1.4:1226/info/getInfos', {
+        const response = await this.$axios.get('http://localhost:1226/info/getInfos', {
           headers: {
             'Authorization': token
           }
@@ -181,7 +181,7 @@ h1 {
   margin-bottom: 20px;
   margin: 5px;
   padding: 15px;
-  width: 250px;
+  width: 220px;
   height: 245px;
   transition: transform 0.2s;
 }

@@ -52,7 +52,7 @@ export default {
     },
     async login() {
       try {
-        const response = await this.$axios.post('http://192.168.1.4:1226/login', {
+        const response = await this.$axios.post('http://localhost:1226/login', {
           id: 1,
           username: this.username,
           password: this.password

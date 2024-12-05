@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	dao.Initminio()
 	dao.InitDB()
 	api.InitRoute()
 }

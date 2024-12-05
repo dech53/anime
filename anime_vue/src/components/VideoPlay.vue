@@ -37,12 +37,14 @@ export default {
             try {
                 const router = useRoute();
                 const token = localStorage.getItem('authToken');
-                const response = await this.$axios.get('http://192.168.1.4:1226/info/getInfoById/' + router.params.id, {
+                const response = await this.$axios.get('http://localhost:1226/info/getInfoById/' + router.params.id, {
                     headers: {
                         'Authorization': token
                     }
                 });
-                if (response.data.code == 200) {
+                if (response.data.code === 302) {
+                    this.$router.push('/login');
+                } else if (response.data.code == 200) {
                     this.anime = response.data.result;
                     // 默认播放第一个集数
                     if (this.anime.length > 0 && this.anime[0].EpisodeCount > 0) {
@@ -55,9 +57,9 @@ export default {
         },
         async playEpisode(anime, episode) {
             try {
-                const videoPath = `http://192.168.1.4:1226/hls/${anime.Year}/${anime.Name}/${anime.Season}/${episode}/output.m3u8`;
+                const response = await this.$axios.get(`http://localhost:1226/hls/${anime.Year}/${anime.Name}/${anime.Season}/${episode}/output.m3u8`);
+                const videoPath = response.data.result;  // 获取后端返回的预签名 URL
                 const videoPlayer = this.$refs.videoPlayer;
-
                 if (this.hls) {
                     // 仅加载新的视频源，而不销毁 HLS 实例
                     this.hls.loadSource(videoPath);
@@ -101,7 +103,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     height: 80vh;
-    width: 78vw;
+    width: 90vw;
 }
 
 .anime-item {
@@ -146,6 +148,7 @@ export default {
     background-color: #000;
     object-fit: cover;
 }
+
 .video-container {
     width: 120%;
     height: 110%;

@@ -4,7 +4,6 @@ import LoginForm from '../components/LoginForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
 import VideoPlay from '../components/VideoPlay.vue'
 import ResetPassword from '../components/ResetPassword.vue'
-
 const routes = [
     {
         path: '/',
